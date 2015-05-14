@@ -1,6 +1,6 @@
 {
-  "name": "invoice-generator",
-  "version": "1.0.0",
+  "name": "invoice-generation-server",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "lodash": "^3.8.0",
-    "moment": "^2.10.3",
-    "pdfkit": "^0.7.1"
+    "express": "^4.12.3",
+    "lodash": "^3.8.0"
   }
 }
