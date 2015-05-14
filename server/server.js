@@ -41,6 +41,7 @@ app.get('/generate-invoice/', function(req, res){
 app.get('/set-next-invoice-number/', function(req, res){
 	confignextInvoiceNumber = req.query.nextInvoiceNumber
 	saveConfig()
+	res.end()
 })
 
 module.exports.initialize = function(options){
