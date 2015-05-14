@@ -40,7 +40,7 @@ app.get('/generate-invoice/', function(req, res){
 
 app.get('/set-next-invoice-number/', function(req, res){
 	confignextInvoiceNumber = req.query.nextInvoiceNumber
-	fs.writeFile(__dirname + '/config.json', JSON.stringfy(config))
+	saveConfig()
 })
 
 module.exports.initialize = function(options){
