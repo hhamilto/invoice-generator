@@ -19,7 +19,7 @@ saveConfig = function(){
 app.get('/generate-invoice/', function(req, res){
 	var options = {};
 
-	options.hoursWorked = req.query.hoursWorked
+	options.hoursWorked = req.query.hoursWorked || 80
 	options.hourlyRate = req.query.hourlyRate || 30
 	options.serviceDescription = "Programming"
 	options.invoiceNumber = req.query.nextInvoiceNumber || config.nextInvoiceNumber++
@@ -34,12 +34,12 @@ app.get('/generate-invoice/', function(req, res){
 	_.defaults(options, config)
 	saveConfig()
 	// here abyde dArk majik??
-	res.setHeader("content-disposition", "attachment; filename="+options.fileName)
+	//res.setHeader("content-disposition", "attachment; filename="+options.fileName)
 	invoiceGenerator.generateInvoice(options)
 })
 
 app.get('/set-next-invoice-number/', function(req, res){
-	confignextInvoiceNumber = req.query.nextInvoiceNumber
+	config.nextInvoiceNumber = req.query.nextInvoiceNumber
 	saveConfig()
 	res.end()
 })

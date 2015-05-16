@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 
@@ -10,15 +11,25 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+	<!--script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script-->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script src="js/main.js"></script>
 
 </head>
 <body>
-	<form>
-	<input type="number" placeholder="hoursWorked"/>
-	<button>Download invoice</button>
-	</form>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+					<form role="form" action="/generate-invoice">
+						<div class="form-group">
+							<label for="">Number of Hours worked</label>
+							<input type="number" class="form-control" placeholder="hoursWorked" name="hoursWorked"/>
+						</div>
+						<button class="btn btn-success">Download invoice</button>
+					</form>
+			</div>
+		</div>
+	</div>
+
 </body>
 </html>
