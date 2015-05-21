@@ -9,12 +9,17 @@ conf = require('./conf.json')
 
 whereClauseFromObject = function(obj){
 	return _.map(_.pairs(obj), function(pair){
-		return mysql.escapeId(pair[0]) + '='+mysql.escape(pair[1])
+		return mysql.escapeId(pair[0]) + '=' + mysql.escape(pair[1])
 	}).join(' AND ')
 }
+
 migrationService = require('./migration-service.js')
+
+var dbReady = false
+
 module.exports.initialize =function(){
-	var dbReady = deferred()
+	if(dbReady) return dbReady
+	dbReady = deferred()
 
 	var conn = mysql.createConnection(conf.database)
 	migrationService.runMigrations().done(function(){
@@ -34,7 +39,8 @@ module.exports.initialize =function(){
 				}
 				module.exports[table].get = function(obj){
 					dfd = deferred()
-					conn.query('SELECT * FROM '+table+' WHERE '+ whereClauseFromObject(obj), function(err, rows){
+					whereClause = _.keys(obj).length>0?' WHERE '+ whereClauseFromObject(obj):''
+					conn.query('SELECT * FROM '+table+whereClause, function(err, rows){
 						if(err)dfd.reject(err)
 						else dfd.resolve(rows)
 					})
@@ -42,8 +48,10 @@ module.exports.initialize =function(){
 					
 				}
 				module.exports[table].set = function(newObj){
+					var id = newObj.id;
+					delete newObj.id;
 					dfd = deferred()
-					conn.query('UPDATE '+table+' SET ?', newObj, function(err, result){
+					conn.query('UPDATE '+table+' SET ? WHERE id=?', [newObj, id], function(err, result){
 						if(err)dfd.reject(err)
 						else dfd.resolve(result.insertId)
 					})
@@ -51,8 +59,7 @@ module.exports.initialize =function(){
 				}
 				module.exports[table].remove = function(obj){
 					dfd = deferred()
-					var query = conn.query('DELETE FROM '+table+' WHERE '+whereClauseFromObject(obj), function(err, result){
-						console.log(query.sql)
+					conn.query('DELETE FROM '+table+' WHERE '+whereClauseFromObject(obj), function(err, result){
 						if(err)dfd.reject(err)
 						else dfd.resolve()
 					})

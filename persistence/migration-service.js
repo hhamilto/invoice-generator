@@ -6,8 +6,8 @@ conf = require('./conf.json')
 
 availableMigrations = fs.readdirSync(__dirname+'/migrations')
 
-dropAndCreateSql = fs.readFileSync('dropAndCreate.sql').toString()
-createMigrationTableSql = fs.readFileSync('createMigrationTable.sql').toString()
+dropAndCreateSql = fs.readFileSync(__dirname+'/dropAndCreate.sql').toString()
+createMigrationTableSql = fs.readFileSync(__dirname+'/createMigrationTable.sql').toString()
 
 var migrationConn = mysql.createConnection(_.defaults({
 	multipleStatements: true
