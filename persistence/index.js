@@ -26,9 +26,22 @@ module.exports.initialize =function(){
 		var ignoredTables = ['Migrations']
 
 		conn.query('SHOW TABLES', function(err,rows){
+			if(err) {
+				dbReady.reject(err)
+				return
+			}
 			var tables = _.without(_.map(rows,'Tables_in_HoursManagement'), 'Migrations')
-			_.each(tables, function(table){
+			deferred.map(tables, function(table){
+				var dfd = deferred()
 				module.exports[table] = {}
+				conn.query('SHOW COLUMNS FROM ' + table, function(err,rows){
+					if(err){
+						dfd.reject(err)
+						return
+					}
+					module.exports[table].columns = rows
+					dfd.resolve()
+				})
 				module.exports[table].create = function(newObj){
 					dfd = deferred()
 					conn.query('INSERT INTO '+table+' SET ?', newObj, function(err, result){
@@ -65,9 +78,10 @@ module.exports.initialize =function(){
 					})
 					return dfd.promise
 				}
-			})
-			dbReady.resolve()
+				return dfd
+			}).then(dbReady.resolve,dbReady.reject)
 		})
+		
 	})
 	return dbReady.promise
 }

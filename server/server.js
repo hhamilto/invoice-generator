@@ -55,8 +55,15 @@ var persistenceActionsToHttpMethods = {
 }
 
 persistence.initialize().done(function(){
-	_.each(_.without(_.keys(persistence),'initialize'), function(tableName){
+	var tableList = _.without(_.keys(persistence),'initialize')
+	app.get('/schema/tables', function(req,res){
+		res.json(tableList)
+	})
+	_.each(tableList, function(tableName){
 		var table = persistence[tableName]
+		app.get('/schema/tables/'+tableName, function(req,res){
+			res.json(table.columns)
+		})
 		app.get('/'+tableName+'/:id',function(req,res){
 			table.get({
 				id: req.params.id

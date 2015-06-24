@@ -1,83 +1,101 @@
-$(function() {
-	Backbone.$ = $
-	
-	var Client = Backbone.Model.extend({urlRoot: '/Clients/' })
-	var Project = Backbone.Model.extend({urlRoot: '/Projects/'})
-	var Hour = Backbone.Model.extend({urlRoot: '/Hours/' })
-	var Invoices = Backbone.Model.extend({urlRoot: '/Invoices/' })
-	
-	//Collections
-	var ClientList = Backbone.Collection.extend({ model: Client, url: '/Clients/' })
-	var ProjectList = Backbone.Collection.extend({ model: Project, url: '/Projects/' })
-	var HourList = Backbone.Collection.extend({ model: Hour, url: '/Hours/' })
-	var InvoicesList = Backbone.Collection.extend({ model: Invoices, url: '/Invoices/' })
+Backbone.$ = $
+$(document).ready(function(){
+	blankIfNull = function(a){
+		return a==null?'':a
+	}
 
 
-	var ProjectListView = Backbone.View.extend({
-		template: _.template($("#project-list-template").html()),
+	var BasicInputView = Backbone.View.extend({
+		template: _.template($('#basic-input-template').html()),
+		initialize: function(){
+			this.$el.html(this.template({o:{name:this.model}}))// put properties off object o so that lodash doesn't complain about undef
+		}
+	})
+
+
+	var getEntityListItemView = function(columns){
+		return Backbone.View.extend({
+			template: _.template($("#entity-list-item-template").html()),
+			initialize: function(options) {
+				this.$el.html(this.template(this.model))
+				_.each(columns, function(column){
+					var inputView = new BasicInputView(column)
+					this.$el.find('.js-entity-list-item-inputs').append(inputView.el)
+				}.bind(this))
+			}
+		})
+	}
+
+	var EntityListView = Backbone.View.extend({
+		template: _.template($("#entity-list-template").html()),
 		initialize: function(options) {
 			_.bindAll(this)
-			this.model = model = []
-			projectList = new ProjectList()
-			projectList.fetch()
-			projectList.on('add', function(project){
-				project.collection = projectList;
-				model.push(new ProjectListItemView({model:project, parentView: this}))
-				this.render()
-			}.bind(this))
 			this.$el.html(this.template())
-			projectList.add(new Project())
-		},
-		remove: function(childView){
-			this.model = _.without(this.model,childView)
-			this.render()
-		},
-		render: function() {
-			this.$el.find('ul li').detach()
-			_.each(this.model,function(view){
-				view.render()
-				this.$el.find('ul').append(view.el)
+			var EntityListItemDfd = $.Deferred()
+			var EntityListItemView
+			$.get('/schema/tables/'+options.tableName).done(function(columns){
+				EntityListItemView = getEntityListItemView(columns)
+				EntityListItemDfd.resolve()
+			})
+			var Entity = Backbone.Model.extend()
+			var EntityList = Backbone.Collection.extend({
+				model: Entity,
+				url: options.tableName
+			})
+			var entityList = new EntityList
+			entityList.fetch()
+			entityList.on('add', function(){
+				EntityListItemDfd.done(function(){
+
+				})
+			})
+			EntityListItemDfd.done(function(){
+				var entityListItemView = new EntityListItemView({model: new Entity() })
+				this.$el.find('ul').append(entityListItemView.el)
 			}.bind(this))
-		}
+		},
 	})
 
-	var ProjectListItemView = Backbone.View.extend({
-		tagName:'li',
-		template: _.template($("#project-list-item-template").html()),
+	var NavigatorLinkView = Backbone.View.extend({
+		tagName: 'li',
+		template: _.template($("#navigator-link-template").html()),
 		initialize: function(options) {
-			_.bindAll(this)
-			this.parentView = options.parentView
-			this.model = this.model || new Project()
+			this.$el.html(this.template({name:this.model}))
+		}
+	})
+
+	var NavigatorView = Backbone.View.extend({
+		template: _.template($("#navigator-bar-template").html()),
+		initialize: function(options) {
 			this.$el.html(this.template(this.model))
-			this.$el.find('input').on('change', function(){
-				this.syncModelToDom()
-				if(!this.model.isNew() )
-					this.model.save()
-			}.bind(this))
-			this.$el.find('button.js-create').on('click', function(){
-				this.syncModelToDom()
-				this.model.save()
-			}.bind(this))
-			this.$el.find('button.js-delete').on('click', function(){
-				this.model.destroy()
-				this.parentView.remove(this)
-			}.bind(this))
-		},
-		syncModelToDom: function(){
-			this.model.set('name', this.$el.find('input.js-name').val())
-			this.model.set('hourlyRate', this.$el.find('input.js-hourly-rate').val())
-		},
-		render: function() {
-			
+			var $navUL = this.$el.find('ul.js-link-list')
+			_.each(this.model, function(tableName){
+				$navUL.append(new NavigatorLinkView({model: tableName}).el)
+			})
 		}
 	})
 
 
-	var ProjectListView = new ProjectListView()
+	var AppRouter = Backbone.Router.extend({
+	})
+	// Instantiate the router
+	var appRouter = new AppRouter
 
-	$('#app-container').append(ProjectListView.el)
+	$.get('/schema/tables/').done(function(tables){
 
-
-});
-
-
+		var navView = new NavigatorView({model:tables})
+		$('body').prepend(navView.el)
+		var $appContainer = $('#js-app-container')
+		_.each(tables, function(table){
+			var tableView = new EntityListView({
+				tableName: table
+			})
+			appRouter.route(table, table, function(){
+				$appContainer.children().detach()
+				$appContainer.append(tableView.el)
+			})
+		})
+		Backbone.history.start(); 
+		appRouter.navigate(tables[0], {trigger: true})
+	})
+})

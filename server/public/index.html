@@ -14,39 +14,55 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<script src="js/main.js"></script>
 
 </head>
 <body>
-	<div id="app-container">
+	<div id="js-app-container">
 
 	</div>
 
-	<!--div class="container-fluid">
-		<div class="row">
-			<div class="col-md-12">
-					<form role="form" action="/generate-invoice">
-						<div class="form-group">
-							<label for="">Number of Hours worked</label>
-							<input type="number" class="form-control" placeholder="hoursWorked" name="hoursWorked"/>
-						</div>
-						<button class="btn btn-success">Download invoice</button>
-					</form>
+	<script type="text/template" id="navigator-bar-template">
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">Invoice Generator</a>
+				</div>
+				<div class="collapse navbar-collapse">
+					<ul class="nav navbar-nav js-link-list">
+					</ul>
+				</div>
 			</div>
-		</div>
-	</div-->
+		</nav>
+	</script>
 
-	<script type="text/template" id="project-list-template">
-		<ul class="project-list">
+	<script type="text/template" id="navigator-link-template">
+		<a href="#<%= name %>"><%= name %></a>
+	</script>
+
+	<script type="text/template" id="entity-list-template">
+		<ul class="entity-list">
 		</ul>
 	</script>
 
-	<script type="text/template" id="project-list-item-template">
-		<input type="text" class="form-control js-name" placeholder="Project Name" value="<%=get('name')%>"/>
-		<input type="number" class="form-control js-hourly-rate" placeholder="Hourly Rate" value="<%=get('hourlyRate')%>"/>
+	<script type="text/template" id="entity-list-item-template">
+		<div class="js-entity-list-item-inputs form-inline">
+		</div>
 		<% if(isNew()){ %><button class="btn btn-success js-create">Create Project</button><%}%>
 		<% if(!isNew()){ %><button class="btn btn-danger js-delete">&times; Delete Project</button><%}%>
 	</script>
+
+
+	<script type="text/template" id="basic-input-template">
+		<input type="<%= blankIfNull(o.type) %>" value="<%= blankIfNull(o.value) %>" placeholder="<%= blankIfNull(o.placeholder) %>"/>
+	</script>
+
+	<script src="js/main.js"></script>
 
 </body>
 </html>

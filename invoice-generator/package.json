@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "lodash": "^3.8.0",
+    "lodash": "^3.9.3",
     "moment": "^2.10.3",
     "pdfkit": "^0.7.1"
   }
