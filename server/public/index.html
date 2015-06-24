@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"><link rel="stylesheet" href="css/main.css">
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js"></script>
+	<script src="js/underscore.inflections.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
@@ -51,15 +52,18 @@
 	</script>
 
 	<script type="text/template" id="entity-list-item-template">
-		<div class="js-entity-list-item-inputs form-inline">
+		<div class="entity-list-item js-entity-list-item form-inline">
+			<% if(isNew()){ %><button class="btn btn-success js-create"><span class="glyphicon glyphicon-plus"></span> Create <%=_.singularize(tableName)%></button><%}%>
+			<% if(!isNew()){ %><button class="btn btn-danger js-delete">&times; Delete <%=_.singularize(tableName)%></button><%}%>
 		</div>
-		<% if(isNew()){ %><button class="btn btn-success js-create">Create Project</button><%}%>
-		<% if(!isNew()){ %><button class="btn btn-danger js-delete">&times; Delete Project</button><%}%>
 	</script>
 
 
 	<script type="text/template" id="basic-input-template">
-		<input type="<%= blankIfNull(o.type) %>" value="<%= blankIfNull(o.value) %>" placeholder="<%= blankIfNull(o.placeholder) %>"/>
+		<div class="form-group">
+			<label for="%= blankIfNull(o.name) %>"><%= blankIfNull(o.name) %>:</label>
+			<input name="%= blankIfNull(o.name) %>" type="<%= blankIfNull(o.type) %>" value="<%= blankIfNull(o.value) %>" placeholder="<%= blankIfNull(o.placeholder) %>"/>
+		</div>
 	</script>
 
 	<script src="js/main.js"></script>

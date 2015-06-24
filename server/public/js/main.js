@@ -6,21 +6,24 @@ $(document).ready(function(){
 
 
 	var BasicInputView = Backbone.View.extend({
+		tagName: 'span',
 		template: _.template($('#basic-input-template').html()),
 		initialize: function(){
-			this.$el.html(this.template({o:{name:this.model}}))// put properties off object o so that lodash doesn't complain about undef
+			this.$el.html(this.template({o:{name:this.model.Field, type:'text'}}))// put properties off object o so that lodash doesn't complain about undef
 		}
 	})
 
 
 	var getEntityListItemView = function(columns){
 		return Backbone.View.extend({
+			tagName: 'li',
 			template: _.template($("#entity-list-item-template").html()),
 			initialize: function(options) {
 				this.$el.html(this.template(this.model))
-				_.each(columns, function(column){
-					var inputView = new BasicInputView(column)
-					this.$el.find('.js-entity-list-item-inputs').append(inputView.el)
+				console.log(_.reject(columns, {Field:'id'}))
+				_.each(_.reject(columns, {Field:'id'}), function(column){
+					var inputView = new BasicInputView({model: column})
+					this.$el.find('.js-entity-list-item').prepend(inputView.el)
 				}.bind(this))
 			}
 		})
@@ -37,7 +40,9 @@ $(document).ready(function(){
 				EntityListItemView = getEntityListItemView(columns)
 				EntityListItemDfd.resolve()
 			})
-			var Entity = Backbone.Model.extend()
+			var Entity = Backbone.Model.extend({
+				tableName: options.tableName
+			})
 			var EntityList = Backbone.Collection.extend({
 				model: Entity,
 				url: options.tableName

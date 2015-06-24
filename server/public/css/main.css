@@ -1,1 +1,13 @@
 body { padding-top: 70px; }
+
+ul.entity-list {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+.entity-list-item {
+	box-shadow: 0 1px 5px 0 rgba(0,0,0,.5);
+	padding:10px;
+	margin:10px;
+}
