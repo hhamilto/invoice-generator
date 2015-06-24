@@ -18,13 +18,23 @@ $(document).ready(function(){
 		return Backbone.View.extend({
 			tagName: 'li',
 			template: _.template($("#entity-list-item-template").html()),
+			events: {
+				'click .js-create': 'save'
+			},
 			initialize: function(options) {
+				_.bindAll(this)
 				this.$el.html(this.template(this.model))
 				console.log(_.reject(columns, {Field:'id'}))
-				_.each(_.reject(columns, {Field:'id'}), function(column){
+				var columnsWithoutId = _.reject(columns, {Field:'id'})
+				this.columnViewMapping = _.zipObject(_.map(columnsWithoutId, 'Field'),_.map(columnsWithoutId, function(column){
 					var inputView = new BasicInputView({model: column})
 					this.$el.find('.js-entity-list-item').prepend(inputView.el)
-				}.bind(this))
+					return inputView
+				}.bind(this)))
+				console.log(this.columnViewMapping)
+			},
+			save: function(){
+
 			}
 		})
 	}
